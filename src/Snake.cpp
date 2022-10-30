@@ -5,12 +5,12 @@
 #include "Snake.h"
 
 
-Snake::Snake(float blockSIZES, float widths, float heights)
+Snake::Snake(float blockSIZE_, float width_, float height_)
 {   
-
-    blockSIZE = blockSIZES;
-    width = widths;
-    height = heights;
+    srand(time(NULL));
+    blockSIZE = blockSIZE_;
+    width = width_;
+    height = height_;
     int horizontalLine = width/blockSIZE;
     int verticalLine = height/blockSIZE;
 
@@ -18,6 +18,11 @@ Snake::Snake(float blockSIZES, float widths, float heights)
 
     dead = false;
 
+    food.setSize(sf::Vector2f(blockSIZE, blockSIZE));
+    food.setFillColor(sf::Color::Red);
+    food.setOutlineColor(sf::Color::White);
+
+    food.setPosition(rand() % (int)(width/blockSIZE) * blockSIZE, (rand() % (int)(height/blockSIZE)) * blockSIZE);
     this->snakeBody.push_back(sf::Vector2f(horizontalLine/2 * blockSIZE,  verticalLine/2 * blockSIZE));
 }
 
@@ -33,11 +38,55 @@ void Snake::show(sf::RenderWindow& window)
         blockSnake.setPosition(*it);
         window.draw(blockSnake);
     }
+
+    window.draw(food);
 }
 
 void Snake::move()
-{
+{   
+   
+    if(foodCollide(snakeBody.at(0).x, snakeBody.at(0).y))
+        eat();
+
     shiftBody();
+    
+    if(wallCollide(snakeBody.at(0).x, snakeBody.at(0).y))
+        dead = 1;
+    else if(bodyCollide(snakeBody.at(0).x, snakeBody.at(0).y))
+        dead = 1;
+    
+}
+
+void Snake::eat()
+{   
+    srand(time(NULL));
+    food.setPosition((rand() % (int)(width/blockSIZE)) * blockSIZE, (rand() % (int)(height/blockSIZE)) * blockSIZE);
+    snakeBody.push_back(sf::Vector2f(0, 0));
+    score++;
+}
+
+bool Snake::foodCollide(float x, float y)
+{
+    return x == food.getPosition().x && y == food.getPosition().y;
+}
+
+bool Snake::wallCollide(float x, float y)
+{
+    return x < 0 || x > width - blockSIZE || y > height - blockSIZE || y < 0;
+}
+
+bool Snake::bodyCollide(float x, float y)
+{
+    for(int i = 1; i<snakeBody.size(); i++)
+    {
+        if(x == snakeBody.at(i).x && y == snakeBody.at(i).y)
+        {   
+            return 1; 
+        }
+            
+    }
+
+    return 0;
 }
 
 void Snake::shiftBody()
@@ -76,4 +125,9 @@ void Snake::moveRight()
 {
     if(direction->x != -blockSIZE)
         direction = new sf::Vector2f(blockSIZE, 0);
+}
+
+bool Snake::isAlive()
+{
+    return !dead;
 }

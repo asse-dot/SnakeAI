@@ -24,7 +24,7 @@ int main()
 
     sf::Clock clock;
     float chrono = 0;
-    float delay = 0.03;
+    float delay = 0.1;
 
     block.setSize(sf::Vector2f(SIZE, SIZE));
     block.setFillColor(sf::Color::Black);
@@ -48,6 +48,11 @@ int main()
                 window.close();
             }
         
+        }
+
+        if(!snake.isAlive())
+        {
+            window.close();
         }
 
         if(humanPlaying)

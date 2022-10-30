@@ -8,3 +8,5 @@ compile: src/main.cpp
 run sfml-app:
 	./sfml-app
 
+export:
+	export LD_LIBRARY_PATH=~/SFML-2.5.1/lib && ./sfml-app
