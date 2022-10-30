@@ -97,10 +97,7 @@ void Snake::shiftBody()
     }
 
     sf::Vector2f head = snakeBody.at(0);
-    //std::cout<<direction.x<<"\n";
     snakeBody.at(0) = sf::Vector2f(head.x + direction->x, head.y + direction->y);
-    //std::cout<<snakeBody.at(0).x<<"\n";
-
 }
 
 void Snake::moveUp()
