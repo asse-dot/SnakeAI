@@ -3,7 +3,9 @@
 #include <iostream>
 #include <time.h>
 
+
 #include "Snake.h"
+#include "Population.h"
 
 
 float SIZE = 30;
@@ -13,12 +15,13 @@ int horizontalLine = vx / SIZE;
 int verticalLine = vy / SIZE;
 
 //DEBUG PLAYING AI OR HUMAN
-bool humanPlaying = true;
+bool humanPlaying =0;
 
 
 int main()
 {   
-    
+    //std::ios_base::sync_with_stdio(false);
+    srand(time(0));
     sf::RenderWindow window(sf::VideoMode(vx, vy), "Snake AI");
     sf::RectangleShape block;
 
@@ -32,6 +35,7 @@ int main()
     block.setOutlineColor(sf::Color::White);
 
     Snake snake(SIZE, vx, vy);
+    Population pop(500, SIZE, vx, vy);
 
 
     while(window.isOpen())
@@ -44,15 +48,15 @@ int main()
         while(window.pollEvent(event))
         {
             if(event.type == sf::Event::Closed)
-            {
+            {   
                 window.close();
             }
         
         }
 
-        if(!snake.isAlive())
-        {
-            window.close();
+        if(!snake.isAlive() && humanPlaying)
+        {   
+            snake = Snake(SIZE, vx, vy);
         }
 
         if(humanPlaying)
@@ -67,7 +71,7 @@ int main()
                 snake.moveDown();
         }
 
-        if(chrono > delay)
+        if(chrono > delay && humanPlaying)
         {
             chrono = 0;
             snake.move();
@@ -81,7 +85,26 @@ int main()
                 window.draw(block);
             }
         }
-        snake.show(window);
+    
+        if(humanPlaying)
+        {
+            snake.show(window);
+        }
+        else
+        {   
+
+            if(!pop.done())
+            {   
+                pop.update();
+                pop.show(window);
+            }
+            else
+            {   
+                pop.calculateFitness();
+                pop.naturalSelection();
+            }
+        
+        }
         window.display();
         
     }
