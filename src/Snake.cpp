@@ -9,21 +9,21 @@
 
 Snake::Snake(float blockSIZE_, float width_, float height_)
 {   
-    srand(time(NULL));
     blockSIZE = blockSIZE_;
     width = width_;
     height = height_;
-    int horizontalLine = width/blockSIZE;
-    int verticalLine = height/blockSIZE;
     lifetime = 0;
-    lifeLeft = 500;
-
+    lifeLeft = 250;
+    score = 0;
+    fitness = 0;
     direction = new sf::Vector2f(blockSIZE, 0);
 
     brain = NeuralNet(24, 4, 16, 2);
 
     dead = false;
 
+    int horizontalLine = width/blockSIZE;
+    int verticalLine = height/blockSIZE;
     food.setSize(sf::Vector2f(blockSIZE, blockSIZE));
     food.setFillColor(sf::Color::Red);
     food.setOutlineColor(sf::Color::White);
@@ -116,14 +116,14 @@ void Snake::think()
     float* vision = look();
    
 
-    float* decision = brain.output_array(vision);
-    
+    float* decision = this->brain.output_array(vision);
+    /*
     std::cout<<decision[0]<<"\n";
     std::cout<<decision[1]<<"\n";
     std::cout<<decision[2]<<"\n";
     std::cout<<decision[3]<<"\n";
     std::cout<<"\n\n\n\n";
-    
+    */
     
     float max = 0;
     int maxI = 0;
@@ -223,6 +223,7 @@ float* Snake::lookinDirection(sf::Vector2f direction)
         pos.y += direction.y;
         distance += 1;
     }
+    
     if(!foundBody)
     {
         look[1] = 0;
@@ -232,8 +233,9 @@ float* Snake::lookinDirection(sf::Vector2f direction)
     {
         look[0] = 0;
     }
-
-    look[2] = 1/distance;
+    
+    distance = 1/distance;
+    look[2] = distance;
     return look;
 
 }
@@ -241,8 +243,7 @@ float* Snake::lookinDirection(sf::Vector2f direction)
 Snake Snake::clonate()
 {
     Snake clone = Snake(blockSIZE, width, height);
-    //clone.brain = brain.clonate();
-    clone.brain = this->brain;
+    clone.brain = brain.clonate();
     return clone;
 }
 
@@ -251,6 +252,7 @@ Snake Snake::crossover(Snake& other)
 {
     Snake child(blockSIZE, width, height);
     child.brain = brain.crossover(other.brain);
+
     return child;
 }
 
@@ -271,25 +273,33 @@ void Snake::calculateFitness()
 void Snake::moveUp()
 {   
     if(direction->y != blockSIZE)
+    {
         direction = new sf::Vector2f(0, -blockSIZE);
+    }
 }
 
 void Snake::moveDown()
 {
     if(direction->y != -blockSIZE)
+    {
         direction = new sf::Vector2f(0, blockSIZE);
+    }
 }
 
 void Snake::moveLeft()
 {
     if(direction->x != blockSIZE)
+    {
         direction = new sf::Vector2f(-blockSIZE, 0);
+    }
 }
 
 void Snake::moveRight()
 {
     if(direction->x != -blockSIZE)
+    {
         direction = new sf::Vector2f(blockSIZE, 0);
+    }
 }
 
 bool Snake::isAlive()

@@ -15,6 +15,8 @@ class Population
         void naturalSelection();
         void calculateFitness();
 
+        void output();
+
     private:
         Snake bestSnake;
         std::vector<Snake> snakes;
@@ -26,8 +28,6 @@ class Population
         void calculateFitnessSum();
         void setBestSnake();
         Snake selectParent();
-
-
 };
 
 #endif 

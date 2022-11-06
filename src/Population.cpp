@@ -4,14 +4,17 @@
 
 Population::Population(int size, float SIZE, float width, float height)
 {   
-
+    srand(time(NULL));
     gen = 0;
     bestFitness = 0;
     bestSnakeScore = 0;
     for(int i = 0; i<size; i++)
     {   
         snakes.push_back(Snake(SIZE, width, height));
+        snakes.at(i).brain.randomize();
     }
+
+
     bestSnake = snakes.at(0).clonate();
 
 
@@ -31,7 +34,7 @@ bool Population::done()
 void Population::show(sf::RenderWindow &window)
 {
     bestSnake.show(window);
-    /*
+    
     for(int i = 1; i<snakes.size(); i++)
     {   
         if(snakes.at(i).isAlive())
@@ -39,7 +42,6 @@ void Population::show(sf::RenderWindow &window)
             snakes.at(i).show(window);
         }
     }
-    */
     
 }
 
@@ -80,8 +82,11 @@ void Population::setBestSnake()
         bestSnakeScore = snakes[maxI].score;
 
     }
+    else
+    {
+        bestSnake = bestSnake.clonate();
+    }
 
-    bestSnake = snakes[maxI].clonate();
 
 }
 
@@ -90,40 +95,46 @@ void Population::naturalSelection()
     setBestSnake();
     calculateFitnessSum();
 
-    std::vector<Snake> temp(snakes);
-    temp.at(0) = bestSnake;
+    std::vector<Snake> temp;
+    temp.push_back(bestSnake.clonate());
     for(int i = 1; i<snakes.size(); i++)
     {   
         Snake parent1 = selectParent();
         Snake parent2 = selectParent();
+        //std::cout<<parent1.brain.output_std(parent2.brain)<<"\n";
         Snake child = parent1.crossover(parent2);
         child.brain.mutate();
-        temp.at(i) = child;
+        temp.push_back(child);
         
     }
 
-    snakes = temp;
+    for(int i = 0; i<temp.size(); i++)
+    {
+        snakes.at(i) = temp.at(i);
+    }
     gen ++;
-
 }
 
 Snake Population::selectParent()
 {
-    float rand_n = random() % (int)fitnessSum;
+    int rand_n = rand() % (int)fitnessSum;
     float sum = 0;
     for(int i = 0; i<snakes.size(); i++)
     {
         sum += snakes.at(i).fitness;
         if(sum > rand_n)
+        {   
             return snakes.at(i);
+        }
         
     }
 
     return snakes.at(0);
-    
 
 
 }
+
+
 
 void Population::calculateFitness()
 {
@@ -138,7 +149,19 @@ void Population::calculateFitnessSum()
     fitnessSum = 0;
     for(int i = 0; i<snakes.size(); i++)
     {
-        fitnessSum += snakes.at(i).fitness;
+        fitnessSum += snakes.at(i).fitness; 
     }
+}
+
+//debug
+void Population::output()
+{   
+    std::cout<<snakes.size();
+    for(int i = 0; i<snakes.size(); i++)
+    {
+        snakes.at(i).brain.output_std();
+        std::cout<<"\n\n\n\n\n\n\n\n\n\n\n\n";
+    }
+    
 }
 

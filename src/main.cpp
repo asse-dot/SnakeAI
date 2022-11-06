@@ -15,13 +15,13 @@ int horizontalLine = vx / SIZE;
 int verticalLine = vy / SIZE;
 
 //DEBUG PLAYING AI OR HUMAN
-bool humanPlaying =0;
 
+bool humanPlaying = 0;
 
 int main()
 {   
     //std::ios_base::sync_with_stdio(false);
-    srand(time(0));
+    srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(vx, vy), "Snake AI");
     sf::RectangleShape block;
 
@@ -35,9 +35,8 @@ int main()
     block.setOutlineColor(sf::Color::White);
 
     Snake snake(SIZE, vx, vy);
-    Population pop(500, SIZE, vx, vy);
-
-
+    Population pop(1500, SIZE, vx, vy);
+    
     while(window.isOpen())
     {   
         float time = clock.getElapsedTime().asSeconds();
@@ -101,7 +100,7 @@ int main()
             else
             {   
                 pop.calculateFitness();
-                pop.naturalSelection();
+                pop.naturalSelection();         
             }
         
         }
